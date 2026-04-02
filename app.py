@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from dotenv import load_dotenv
+from streamlit_autorefresh import st_autorefresh
 
 FORECAST_PARQUET_PATH = Path("data/weather_forecast_clean.parquet")
 CURRENT_PARQUET_PATH = Path("data/weather_current_clean.parquet")
@@ -97,15 +98,8 @@ def inject_global_styles():
             color: {THEME["body_color"]};
             font-family: {THEME["body_font"]};
         }}
-        .block-container {{ padding-top: 2.1rem; padding-bottom: 2.6rem; }}
-        h1 {{
-            font-family: {THEME["heading_font"]};
-            color: {THEME["title_color"]};
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            font-size: 3rem;
-            margin-bottom: 0.1rem;
-        }}
+
+        .block-container {{ padding-top: 1.55rem; padding-bottom: 2.35rem; }}
         h2 {{
             font-family: {THEME["heading_font"]};
             color: {THEME["section_title_color"]};
@@ -118,7 +112,46 @@ def inject_global_styles():
             overflow: hidden;
             background: {THEME["surface_bg"]};
         }}
+        .loading-shell {{
+            margin-top: 0.6rem;
+            margin-bottom: 1.4rem;
+            max-width: 430px;
+            background: rgba(255, 253, 249, 0.96);
+            border: 1px solid {THEME["soft_border"]};
+            border-radius: 22px;
+            box-shadow: {THEME["shadow"]};
+            padding: 1rem 1.1rem;
+        }}
+        .loading-title {{
+            font-family: {THEME["heading_font"]};
+            color: {THEME["title_color"]};
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.3rem;
+        }}
+        .loading-copy {{
+            color: {THEME["muted_color"]};
+            font-size: 0.92rem;
+            line-height: 1.55;
+        }}
         </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_loading_state():
+    """Render a cleaner loading card while the dashboard fetches data."""
+
+    st.markdown(
+        """
+        <div class="loading-shell">
+            <div class="loading-title">Refreshing the latest weather snapshot</div>
+            <div class="loading-copy">
+                Pulling the newest parquet files so the dashboard opens with the most recent Dhaka update.
+            </div>
+        </div>
         """,
         unsafe_allow_html=True,
     )
@@ -128,11 +161,14 @@ def render_intro(extracted_at_text):
     """Render page subtitle and update timestamp."""
     st.markdown(
         f"""
-        <div style="color:{THEME['muted_color']};margin-top:0.35rem;margin-bottom:1rem;font-size:0.98rem;line-height:1.55;">
+        <div style="font-family:{THEME['heading_font']};color:{THEME['title_color']};font-weight:700;letter-spacing:-0.03em;font-size:3rem;line-height:1.04;margin:0 0 0.38rem 0;">
+            Dhaka Weather Dashboard
+        </div>
+        <div style="color:{THEME['muted_color']};margin-top:0;margin-bottom:0.78rem;font-size:0.98rem;line-height:1.45;">
             Dhaka's weather at a glance with current conditions, daily outlook and historical insight.
         </div>
         <div style="
-            display:inline-flex;gap:0.45rem;align-items:center;margin-bottom:1.25rem;
+            display:inline-flex;gap:0.45rem;align-items:center;margin-bottom:0.95rem;
             background:rgba(255,253,249,0.88);border:1px solid {THEME['soft_border']};
             border-radius:20px;padding:0.55rem 0.95rem;font-size:0.93rem;color:{THEME['body_color']};
         ">
@@ -148,10 +184,14 @@ def render_section_title(title, caption):
     """Render one section heading and caption."""
     st.markdown(
         f"""
-        <section style="margin-top:2.25rem;margin-bottom:1.05rem;">
-            <h2 style="margin:0;font-size:1.75rem;font-weight:500;letter-spacing:-0.02em;">{title}</h2>
-            <div style="margin-top:0.4rem;color:{THEME['muted_color']};font-size:0.93rem;line-height:1.55;">{caption}</div>
-        </section>
+        <div style="margin-top:1.45rem;margin-bottom:0.7rem;">
+            <div style="font-family:{THEME['heading_font']};color:{THEME['section_title_color']};font-size:1.75rem;font-weight:500;letter-spacing:-0.02em;line-height:1.04;margin:0 0 0.8rem 0;">
+                {title}
+            </div>
+            <div style="color:{THEME['muted_color']};font-size:0.92rem;line-height:1.34;margin:0;">
+                {caption}
+            </div>
+        </div>
         """,
         unsafe_allow_html=True,
     )
@@ -159,12 +199,17 @@ def render_section_title(title, caption):
 
 def render_current_weather_card(current_row):
     """Render the hero card for current conditions."""
+
+    # Show the current Dhaka time in the card header so it behaves like a live
+    # local clock, independent of when the weather data was extracted.
+    current_dhaka_time = pd.Timestamp.now(tz="Asia/Dhaka").strftime("%I:%M %p")
+
     st.markdown(
         f"""
         <div style="background:{THEME['card_bg']};border:1px solid {THEME['card_border']};border-radius:22px;box-shadow:{THEME['shadow']};overflow:hidden;">
             <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.35rem 0.9rem 1.35rem;border-bottom:1px solid {THEME['soft_border']};color:{THEME['muted_color']};font-size:0.92rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">
                 <span>Current Weather</span>
-                <span>{current_row['extracted_at'].strftime('%I:%M %p')}</span>
+                <span>{current_dhaka_time}</span>
             </div>
             <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;padding:1.35rem;">
                 <div>
@@ -452,8 +497,12 @@ def render_temperature_trend_chart(trend_df):
 
 
 st.set_page_config(page_title="Dhaka Weather Dashboard", layout="wide")
+
+# Refresh the dashboard every minute so the current-time clock stays current
+# without requiring the user to manually reload the page.
+st_autorefresh(interval=60 * 1000, key="dhaka_dashboard_refresh")
+
 inject_global_styles()
-st.title("Dhaka Weather Dashboard")
 
 if (
     not FORECAST_PARQUET_PATH.exists()
@@ -466,7 +515,12 @@ if (
     )
     st.stop()
 
-forecast_df, current_df, daily_df, historical_df = load_parquet_data()
+loading_placeholder = st.empty()
+with loading_placeholder.container():
+    render_loading_state()
+with st.spinner("Loading the latest dashboard data..."):
+    forecast_df, current_df, daily_df, historical_df = load_parquet_data()
+loading_placeholder.empty()
 latest_current = current_df.sort_values("extracted_at", ascending=False).iloc[0]
 upcoming_df = forecast_df[forecast_df["is_upcoming"]].copy().head(12)
 next_three_days_df = daily_df.sort_values("forecast_date").head(3)
