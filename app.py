@@ -85,6 +85,15 @@ def get_data_source(dataset_name):
     return local_sources[dataset_name]
 
 
+def using_s3_data():
+    """Return True when the dashboard should load parquet files from S3."""
+
+    return (
+        os.getenv("STREAMLIT_USE_S3", "false").lower() == "true"
+        and bool(os.getenv("AWS_S3_BUCKET"))
+    )
+
+
 def inject_global_styles():
     """Inject global CSS so the theme is controlled in one place."""
     st.markdown(
@@ -504,7 +513,7 @@ st_autorefresh(interval=60 * 1000, key="dhaka_dashboard_refresh")
 
 inject_global_styles()
 
-if (
+if not using_s3_data() and (
     not FORECAST_PARQUET_PATH.exists()
     or not CURRENT_PARQUET_PATH.exists()
     or not DAILY_PARQUET_PATH.exists()
