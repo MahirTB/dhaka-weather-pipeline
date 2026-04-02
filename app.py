@@ -32,7 +32,7 @@ THEME = {
 }
 
 
-@st.cache_data
+@st.cache_data(ttl=300)
 def load_parquet_data():
     """Load the parquet files used by the dashboard."""
     forecast_df = pd.read_parquet(get_data_source("forecast"))
