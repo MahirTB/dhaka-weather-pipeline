@@ -251,3 +251,26 @@ Prefect Managed pulls your code from GitHub, but it does not automatically know
 which extra Python packages your project needs. The included `deploy_prefect.py`
 deployment script tells Prefect Managed to install the runtime packages required
 by `scraper.py`, such as `boto3`, `pandas`, and `requests`.
+
+### Add AWS Credentials To Prefect Securely
+
+Do not put AWS credentials in GitHub or source files. Instead, create Prefect
+Secret blocks and let `prefect_flow.py` load them at runtime.
+
+Create these Secret blocks in Prefect Cloud:
+
+- `aws-access-key-id`
+- `aws-secret-access-key`
+- `aws-default-region`
+- `aws-s3-bucket`
+
+Optional Secret blocks for custom S3 object keys:
+
+- `aws-s3-current-key`
+- `aws-s3-forecast-key`
+- `aws-s3-daily-key`
+- `aws-s3-historical-key`
+
+The flow maps those Secret block names to the environment variables expected by
+`scraper.py`, so your existing S3 upload logic continues to work without changes
+to the ETL code.
