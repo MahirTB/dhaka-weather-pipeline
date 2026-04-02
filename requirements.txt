@@ -1,0 +1,9 @@
+boto3
+pandas
+prefect
+plotly
+python-dotenv
+pyarrow
+requests
+s3fs
+streamlit

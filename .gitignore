@@ -1,0 +1,26 @@
+# Environments
+.env
+*.env
+.venv/
+.prefect/
+__pycache__/
+.tmp/
+
+# Runtime folders
+data/
+logs/
+plugins/
+
+# Data files (if you save local copies)
+*.json
+*.parquet
+*.csv
+
+# Python build/cache files
+*.pyc
+*.pyo
+*.pyd
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
