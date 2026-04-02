@@ -229,7 +229,7 @@ Log in to Prefect, then deploy the flow with a 2-hour cron schedule:
 
 ```powershell
 prefect cloud login
-prefect deploy prefect_flow.py:dhaka_weather_prefect_flow --name "dhaka-weather-every-2-hours" --cron "0 */2 * * *"
+python deploy_prefect.py
 ```
 
 That schedule runs at:
@@ -244,3 +244,10 @@ That schedule runs at:
 - Prefect handles scheduling, retries, logs, and run history
 - `scraper.py` remains the single source of truth for the ETL logic
 - Airflow can stay in the repo as a local showcase, while Prefect becomes the live scheduler
+
+### Important For Managed Prefect Runs
+
+Prefect Managed pulls your code from GitHub, but it does not automatically know
+which extra Python packages your project needs. The included `deploy_prefect.py`
+deployment script tells Prefect Managed to install the runtime packages required
+by `scraper.py`, such as `boto3`, `pandas`, and `requests`.
