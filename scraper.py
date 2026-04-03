@@ -393,6 +393,30 @@ def append_parquet_history(new_dataframe, output_path, subset_columns):
     if output_path.exists():
         existing_df = pd.read_parquet(output_path)
         combined_df = pd.concat([existing_df, new_dataframe], ignore_index=True)
+    else:
+        # In managed runtimes like Prefect Cloud, local files are ephemeral. If
+        # the local history file does not exist, try to pull the previously
+        # stored history parquet from S3 before appending the new batch.
+        bucket_name = os.getenv("AWS_S3_BUCKET")
+        historical_key = os.getenv(
+            "AWS_S3_HISTORICAL_KEY", "weather/weather_historical_hourly.parquet"
+        )
+        if bucket_name:
+            s3_history_path = f"s3://{bucket_name}/{historical_key}"
+            try:
+                existing_df = pd.read_parquet(s3_history_path)
+                combined_df = pd.concat(
+                    [existing_df, new_dataframe], ignore_index=True
+                )
+                print(f"Loaded existing historical data from {s3_history_path}")
+            except Exception:
+                # Keep going when the historical file does not exist yet or S3
+                # is temporarily unavailable. In that case we simply start a new
+                # history file from the current batch.
+                print(
+                    "No existing historical parquet found in S3. "
+                    "Starting history from the current batch."
+                )
 
     # Remove duplicate rows based on the chosen business key columns.
     combined_df = combined_df.drop_duplicates(subset=subset_columns, keep="last")
