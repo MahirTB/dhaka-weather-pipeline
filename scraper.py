@@ -14,9 +14,9 @@ API_URL = (
     "https://api.open-meteo.com/v1/forecast"
     "?latitude=23.81"
     "&longitude=90.41"
-    "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code"
+    "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code"
     "&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"
-    "&daily=weather_code,temperature_2m_max,temperature_2m_min"
+    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,rain_sum,showers_sum,snowfall_sum"
     "&timezone=Asia%2FDhaka"
 )
 
@@ -159,6 +159,56 @@ def build_current_weather_summary(weather_code, temperature):
     return f"{temp_tone} with {condition_text}"
 
 
+def build_precipitation_summary(
+    precipitation_probability, rain_sum, showers_sum, snowfall_sum
+):
+    """Create a short daily precipitation line for the outlook card."""
+
+    # Choose the most relevant precipitation type based on forecast totals.
+    if snowfall_sum is not None and snowfall_sum > 0:
+        precipitation_type = "snow"
+    elif showers_sum is not None and showers_sum > 0:
+        precipitation_type = "showers"
+    elif rain_sum is not None and rain_sum > 0:
+        precipitation_type = "rain"
+    else:
+        precipitation_type = "rain"
+
+    # When the API returns no probability, keep the card text graceful.
+    if precipitation_probability is None or pd.isna(precipitation_probability):
+        return f"Chance of {precipitation_type}: --"
+
+    return f"Chance of {precipitation_type}: {int(round(precipitation_probability))}%"
+
+
+def convert_wind_direction_to_text(wind_direction_degrees):
+    """Convert wind direction degrees into a readable compass direction."""
+
+    if wind_direction_degrees is None or pd.isna(wind_direction_degrees):
+        return None
+
+    compass_directions = [
+        "North",
+        "North-Northeast",
+        "Northeast",
+        "East-Northeast",
+        "East",
+        "East-Southeast",
+        "Southeast",
+        "South-Southeast",
+        "South",
+        "South-Southwest",
+        "Southwest",
+        "West-Southwest",
+        "West",
+        "West-Northwest",
+        "Northwest",
+        "North-Northwest",
+    ]
+    direction_index = int((wind_direction_degrees % 360) / 22.5 + 0.5) % 16
+    return compass_directions[direction_index]
+
+
 def fetch_weather():
     """Call the forecast API and return the JSON response as a dictionary."""
 
@@ -283,6 +333,10 @@ def transform_current_data(data, extracted_at):
                 "temperature_2m": current.get("temperature_2m"),
                 "relative_humidity_2m": current.get("relative_humidity_2m"),
                 "wind_speed_10m": current.get("wind_speed_10m"),
+                "wind_direction_10m": current.get("wind_direction_10m"),
+                "wind_direction_text": convert_wind_direction_to_text(
+                    current.get("wind_direction_10m")
+                ),
                 "weather_code": current.get("weather_code"),
                 "weather_summary": build_current_weather_summary(
                     current.get("weather_code"),
@@ -305,11 +359,24 @@ def transform_daily_data(data, extracted_at):
 
     # Build one row per forecast day.
     records = []
-    for forecast_date, weather_code, temp_max, temp_min in zip(
+    for (
+        forecast_date,
+        weather_code,
+        temp_max,
+        temp_min,
+        precipitation_probability,
+        rain_sum,
+        showers_sum,
+        snowfall_sum,
+    ) in zip(
         daily.get("time", []),
         daily.get("weather_code", []),
         daily.get("temperature_2m_max", []),
         daily.get("temperature_2m_min", []),
+        daily.get("precipitation_probability_max", []),
+        daily.get("rain_sum", []),
+        daily.get("showers_sum", []),
+        daily.get("snowfall_sum", []),
     ):
         records.append(
             {
@@ -325,6 +392,16 @@ def transform_daily_data(data, extracted_at):
                 ),
                 "temperature_2m_max": temp_max,
                 "temperature_2m_min": temp_min,
+                "precipitation_probability_max": precipitation_probability,
+                "rain_sum": rain_sum,
+                "showers_sum": showers_sum,
+                "snowfall_sum": snowfall_sum,
+                "precipitation_summary": build_precipitation_summary(
+                    precipitation_probability,
+                    rain_sum,
+                    showers_sum,
+                    snowfall_sum,
+                ),
             }
         )
 

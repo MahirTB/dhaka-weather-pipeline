@@ -177,6 +177,13 @@ def inject_global_styles():
                 width: 100% !important;
                 max-width: 100% !important;
             }}
+            .current-card,
+            .daily-card,
+            .story-card,
+            .chart-card,
+            .loading-shell {{
+                margin-bottom: 0.95rem !important;
+            }}
             .section-heading-wrap {{
                 margin-top: 1.1rem !important;
                 margin-bottom: 0.45rem !important;
@@ -340,6 +347,9 @@ def render_current_weather_card(current_row):
     # Show the current Dhaka time in the card header so it behaves like a live
     # local clock, independent of when the weather data was extracted.
     current_dhaka_time = pd.Timestamp.now(tz="Asia/Dhaka").strftime("%I:%M %p")
+    wind_display = f"{current_row['wind_speed_10m']:.1f} km/h"
+    if current_row.get("wind_direction_text"):
+        wind_display = f"{wind_display} {current_row['wind_direction_text']}"
 
     st.markdown(
         f"""
@@ -361,7 +371,7 @@ def render_current_weather_card(current_row):
                 </div>
                 <div>
                     <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Humidity</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['relative_humidity_2m']}%</span></div>
-                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Wind</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['wind_speed_10m']:.1f} km/h</span></div>
+                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Wind</span><span style="color:{THEME['title_color']};font-weight:600;">{wind_display}</span></div>
                     <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.75rem 0;"><span style="color:{THEME['muted_color']};">Condition</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['weather_summary']}</span></div>
                 </div>
             </div>
@@ -379,7 +389,7 @@ def render_daily_outlook_card(daily_df):
             f'<div class="daily-row" style="display:grid;grid-template-columns:88px 120px 1fr;align-items:center;gap:0.9rem;padding:1rem 1.35rem;border-top:1px solid {THEME["soft_border"]};">'
             f'<div class="daily-day"><div style="color:{THEME["title_color"]};font-weight:700;">{row.forecast_date.strftime("%a").upper()}</div><div class="daily-date" style="color:{THEME["muted_color"]};font-size:0.9rem;">{row.forecast_date.strftime("%m/%d")}</div></div>'
             f'<div class="daily-temp-wrap" style="display:flex;align-items:baseline;gap:0.5rem;font-family:{THEME["heading_font"]};color:{THEME["title_color"]};"><span class="daily-max" style="font-size:2rem;font-weight:600;">{row.temperature_2m_max:.0f}&deg;</span><span class="daily-min" style="font-size:1.35rem;color:{THEME["muted_color"]};">{row.temperature_2m_min:.0f}&deg;</span></div>'
-            f'<div><div class="daily-summary" style="color:{THEME["body_color"]};font-size:1rem;font-weight:500;">{row.weather_summary}</div><div class="daily-minmax" style="color:{THEME["muted_color"]};font-size:0.92rem;margin-top:0.15rem;">Max {row.temperature_2m_max:.0f}&deg; / Min {row.temperature_2m_min:.0f}&deg;</div></div>'
+            f'<div><div class="daily-summary" style="color:{THEME["body_color"]};font-size:1rem;font-weight:500;">{row.weather_summary}</div><div class="daily-minmax" style="color:{THEME["muted_color"]};font-size:0.92rem;margin-top:0.15rem;">{row.precipitation_summary}</div></div>'
             "</div>"
         )
     st.markdown(
@@ -486,7 +496,7 @@ def render_temperature_forecast_chart(chart_df):
         zeroline=False,
     )
     st.markdown(
-        f'<div style="background:{THEME["surface_bg"]};border:1px solid {THEME["soft_border"]};border-radius:22px;box-shadow:{THEME["shadow"]};padding:0.55rem 0.65rem 0.35rem 0.65rem;">',
+        f'<div class="chart-card" style="background:{THEME["surface_bg"]};border:1px solid {THEME["soft_border"]};border-radius:22px;box-shadow:{THEME["shadow"]};padding:0.55rem 0.65rem 0.35rem 0.65rem;">',
         unsafe_allow_html=True,
     )
     st.plotly_chart(
@@ -651,7 +661,7 @@ def render_temperature_trend_chart(trend_df):
         zeroline=False,
     )
     st.markdown(
-        f'<div style="margin-top:1.4rem;background:{THEME["surface_bg"]};border:1px solid {THEME["soft_border"]};border-radius:22px;box-shadow:{THEME["shadow"]};padding:0.8rem 0.8rem 0.45rem 0.8rem;">',
+        f'<div class="chart-card" style="margin-top:1.4rem;background:{THEME["surface_bg"]};border:1px solid {THEME["soft_border"]};border-radius:22px;box-shadow:{THEME["shadow"]};padding:0.8rem 0.8rem 0.45rem 0.8rem;">',
         unsafe_allow_html=True,
     )
     st.plotly_chart(
@@ -687,7 +697,12 @@ with st.spinner("Loading the latest dashboard data..."):
 loading_placeholder.empty()
 latest_current = current_df.sort_values("extracted_at", ascending=False).iloc[0]
 upcoming_df = forecast_df[forecast_df["is_upcoming"]].copy().head(12)
-next_three_days_df = daily_df.sort_values("forecast_date").head(3)
+current_date = latest_current["extracted_at"].date()
+next_three_days_df = (
+    daily_df[daily_df["forecast_date"].dt.date > current_date]
+    .sort_values("forecast_date")
+    .head(3)
+)
 comparison_story = build_current_vs_yesterday_story(latest_current, historical_df)
 temperature_trend_df = build_seven_day_temperature_trend(
     historical_df, latest_current["extracted_at"]
