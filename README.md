@@ -1,4 +1,4 @@
-![Architecture Diagram](architecture.jpg)
+![Architecture Diagram](images/architecture.jpg)
 
 ## 🏗️ Architecture
 
@@ -8,7 +8,7 @@ This pipeline follows a modular ETL (Extract, Transform, Load) pattern, orchestr
   An automated Python script fetches real-time weather data from the Open-Meteo API.
 
 - **Transformation:**  
-  Raw data is cleaned using Pandas, localizing timestamps to Asia/Dhaka and converting the dataset into Parquet format for optimized cloud storage and performance.
+  Raw JSON data is processed using Pandas to ensure schema consistency. Key transformations include standardizing units (°C, km/h), localizing timestamps to Asia/Dhaka, and partitioning the data into Parquet format for high-performance cloud storage and cost-efficient querying.
 
 - **Loading:**  
   The processed, high-performance dataset is pushed to an AWS S3 bucket (Data Lake).
@@ -20,7 +20,7 @@ This pipeline follows a modular ETL (Extract, Transform, Load) pattern, orchestr
 
 ## 🛠️ Tech Stack
 
-- **Language:** Python (Pandas, Boto3, Requests)  
-- **Orchestration:** Prefect Cloud (Hybrid Execution)  
+- **Language:** Python
+- **Orchestration:** Prefect Cloud
 - **Cloud Infrastructure:** AWS S3  
-- **Visualization:** Streamlit & Plotly Express  
+- **Visualization:** Streamlit & Plotly
