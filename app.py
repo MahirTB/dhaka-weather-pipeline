@@ -21,7 +21,7 @@ THEME = {
     "card_bg": "#fffdf9",
     "card_border": "#e7ddd1",
     "soft_border": "#ddd4c8",
-    "shadow": "0 12px 28px rgba(15, 23, 42, 0.06)",
+    "shadow": "0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 32px rgba(15, 23, 42, 0.08), 0 28px 72px rgba(15, 23, 42, 0.06)",
     "title_color": "#183b6b",
     "section_title_color": "#294f7e",
     "body_color": "#334155",
@@ -144,6 +144,134 @@ def inject_global_styles():
             font-size: 0.92rem;
             line-height: 1.55;
         }}
+        @media (max-width: 768px) {{
+            .block-container {{
+                padding-top: 0.95rem;
+                padding-bottom: 1.25rem;
+                padding-left: 0.8rem;
+                padding-right: 0.8rem;
+            }}
+            .dashboard-title {{
+                font-size: 2.15rem !important;
+                line-height: 1.04 !important;
+                margin-bottom: 0.28rem !important;
+            }}
+            .dashboard-subtitle {{
+                font-size: 0.94rem !important;
+                line-height: 1.38 !important;
+                margin-bottom: 0.72rem !important;
+            }}
+            .update-pill {{
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+                flex-wrap: wrap;
+                font-size: 0.87rem !important;
+                margin-bottom: 0.75rem !important;
+            }}
+            [data-testid="stHorizontalBlock"] {{
+                flex-direction: column !important;
+                gap: 0.85rem !important;
+            }}
+            [data-testid="stHorizontalBlock"] > div {{
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
+            .section-heading-wrap {{
+                margin-top: 1.1rem !important;
+                margin-bottom: 0.45rem !important;
+            }}
+            .section-title {{
+                font-size: 1.45rem !important;
+                margin-bottom: 0.08rem !important;
+            }}
+            .section-caption {{
+                font-size: 0.9rem !important;
+                line-height: 1.34 !important;
+            }}
+            .current-card-header,
+            .daily-card-header {{
+                padding: 0.85rem 1rem 0.75rem 1rem !important;
+                font-size: 0.8rem !important;
+            }}
+            .current-card-body {{
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+                padding: 1rem !important;
+            }}
+            .current-temp-row {{
+                gap: 0.75rem !important;
+                align-items: flex-start !important;
+            }}
+            .current-weather-icon {{
+                font-size: 2.25rem !important;
+                line-height: 1 !important;
+            }}
+            .current-temp-value {{
+                font-size: 3rem !important;
+            }}
+            .current-temp-unit {{
+                font-size: 1.55rem !important;
+            }}
+            .current-summary {{
+                margin-top: 0.55rem !important;
+                font-size: 1rem !important;
+            }}
+            .current-location {{
+                font-size: 0.9rem !important;
+            }}
+            .current-stat-row {{
+                padding: 0.62rem 0 !important;
+                font-size: 0.95rem !important;
+                gap: 0.8rem !important;
+            }}
+            .current-stat-row span:last-child {{
+                text-align: right;
+            }}
+            .daily-row {{
+                grid-template-columns: 1fr !important;
+                gap: 0.42rem !important;
+                padding: 0.9rem 1rem !important;
+            }}
+            .daily-day {{
+                display: flex !important;
+                align-items: baseline !important;
+                gap: 0.45rem !important;
+            }}
+            .daily-date {{
+                font-size: 0.85rem !important;
+            }}
+            .daily-temp-wrap {{
+                gap: 0.35rem !important;
+            }}
+            .daily-max {{
+                font-size: 1.7rem !important;
+            }}
+            .daily-min {{
+                font-size: 1.15rem !important;
+            }}
+            .daily-summary {{
+                font-size: 0.96rem !important;
+            }}
+            .daily-minmax {{
+                font-size: 0.87rem !important;
+            }}
+            .story-card {{
+                min-height: auto !important;
+                padding: 1rem !important;
+            }}
+            .story-eyebrow {{
+                margin-bottom: 0.55rem !important;
+            }}
+            .story-primary {{
+                font-size: 1.35rem !important;
+                margin-bottom: 0.48rem !important;
+            }}
+            .story-copy {{
+                font-size: 0.9rem !important;
+                line-height: 1.5 !important;
+            }}
+        }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -170,13 +298,13 @@ def render_intro(extracted_at_text):
     """Render page subtitle and update timestamp."""
     st.markdown(
         f"""
-        <div style="font-family:{THEME['heading_font']};color:{THEME['title_color']};font-weight:700;letter-spacing:-0.03em;font-size:3rem;line-height:1.04;margin:0 0 0.38rem 0;">
+        <div class="dashboard-title" style="font-family:{THEME['heading_font']};color:{THEME['title_color']};font-weight:700;letter-spacing:-0.03em;font-size:3rem;line-height:1.04;margin:0 0 0.38rem 0;">
             Dhaka Weather Dashboard
         </div>
-        <div style="color:{THEME['muted_color']};margin-top:0;margin-bottom:0.78rem;font-size:0.98rem;line-height:1.45;">
+        <div class="dashboard-subtitle" style="color:{THEME['muted_color']};margin-top:0;margin-bottom:0.78rem;font-size:0.98rem;line-height:1.45;">
             Dhaka's weather at a glance with current conditions, daily outlook and historical insight.
         </div>
-        <div style="
+        <div class="update-pill" style="
             display:inline-flex;gap:0.45rem;align-items:center;margin-bottom:0.95rem;
             background:rgba(255,253,249,0.88);border:1px solid {THEME['soft_border']};
             border-radius:20px;padding:0.55rem 0.95rem;font-size:0.93rem;color:{THEME['body_color']};
@@ -193,11 +321,11 @@ def render_section_title(title, caption):
     """Render one section heading and caption."""
     st.markdown(
         f"""
-        <div style="margin-top:1.45rem;margin-bottom:0.7rem;">
-            <div style="font-family:{THEME['heading_font']};color:{THEME['section_title_color']};font-size:1.75rem;font-weight:500;letter-spacing:-0.02em;line-height:1.04;margin:0 0 0.8rem 0;">
+        <div class="section-heading-wrap" style="margin-top:1.45rem;margin-bottom:0.7rem;">
+            <div class="section-title" style="font-family:{THEME['heading_font']};color:{THEME['section_title_color']};font-size:1.75rem;font-weight:500;letter-spacing:-0.02em;line-height:1.04;margin:0 0 0.8rem 0;">
                 {title}
             </div>
-            <div style="color:{THEME['muted_color']};font-size:0.92rem;line-height:1.34;margin:0;">
+            <div class="section-caption" style="color:{THEME['muted_color']};font-size:0.92rem;line-height:1.34;margin:0;">
                 {caption}
             </div>
         </div>
@@ -215,26 +343,26 @@ def render_current_weather_card(current_row):
 
     st.markdown(
         f"""
-        <div style="background:{THEME['card_bg']};border:1px solid {THEME['card_border']};border-radius:22px;box-shadow:{THEME['shadow']};overflow:hidden;">
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.35rem 0.9rem 1.35rem;border-bottom:1px solid {THEME['soft_border']};color:{THEME['muted_color']};font-size:0.92rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">
+        <div class="current-card" style="background:{THEME['card_bg']};border:1px solid {THEME['card_border']};border-radius:22px;box-shadow:{THEME['shadow']};overflow:hidden;">
+            <div class="current-card-header" style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.35rem 0.9rem 1.35rem;border-bottom:1px solid {THEME['soft_border']};color:{THEME['muted_color']};font-size:0.92rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">
                 <span>Current Weather</span>
                 <span>{current_dhaka_time}</span>
             </div>
-            <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;padding:1.35rem;">
+            <div class="current-card-body" style="display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;padding:1.35rem;">
                 <div>
-                    <div style="display:flex;align-items:center;gap:1rem;">
-                        <div style="font-size:3rem;">&#9728;</div>
-                        <div style="font-family:{THEME['heading_font']};color:{THEME['title_color']};font-size:4rem;font-weight:600;line-height:0.95;">
-                            {current_row['temperature_2m']:.1f}<span style="font-size:2rem;color:{THEME['muted_color']};">&deg;C</span>
+                    <div class="current-temp-row" style="display:flex;align-items:center;gap:1rem;">
+                        <div class="current-weather-icon" style="font-size:3rem;">&#9728;</div>
+                        <div class="current-temp-value" style="font-family:{THEME['heading_font']};color:{THEME['title_color']};font-size:4rem;font-weight:600;line-height:0.95;">
+                            {current_row['temperature_2m']:.1f}<span class="current-temp-unit" style="font-size:2rem;color:{THEME['muted_color']};">&deg;C</span>
                         </div>
                     </div>
-                    <div style="margin-top:0.7rem;color:{THEME['body_color']};font-size:1.05rem;font-weight:500;">{current_row['weather_summary']}</div>
-                    <div style="margin-top:0.3rem;color:{THEME['muted_color']};font-size:0.96rem;">Dhaka, Bangladesh</div>
+                    <div class="current-summary" style="margin-top:0.7rem;color:{THEME['body_color']};font-size:1.05rem;font-weight:500;">{current_row['weather_summary']}</div>
+                    <div class="current-location" style="margin-top:0.3rem;color:{THEME['muted_color']};font-size:0.96rem;">Dhaka, Bangladesh</div>
                 </div>
                 <div>
-                    <div style="display:flex;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Humidity</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['relative_humidity_2m']}%</span></div>
-                    <div style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Wind</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['wind_speed_10m']:.1f} km/h</span></div>
-                    <div style="display:flex;justify-content:space-between;padding:0.75rem 0;"><span style="color:{THEME['muted_color']};">Condition</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['weather_summary']}</span></div>
+                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Humidity</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['relative_humidity_2m']}%</span></div>
+                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Wind</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['wind_speed_10m']:.1f} km/h</span></div>
+                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.75rem 0;"><span style="color:{THEME['muted_color']};">Condition</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['weather_summary']}</span></div>
                 </div>
             </div>
         </div>
@@ -248,14 +376,14 @@ def render_daily_outlook_card(daily_df):
     rows = []
     for row in daily_df.head(3).itertuples(index=False):
         rows.append(
-            f'<div style="display:grid;grid-template-columns:88px 120px 1fr;align-items:center;gap:0.9rem;padding:1rem 1.35rem;border-top:1px solid {THEME["soft_border"]};">'
-            f'<div><div style="color:{THEME["title_color"]};font-weight:700;">{row.forecast_date.strftime("%a").upper()}</div><div style="color:{THEME["muted_color"]};font-size:0.9rem;">{row.forecast_date.strftime("%m/%d")}</div></div>'
-            f'<div style="display:flex;align-items:baseline;gap:0.5rem;font-family:{THEME["heading_font"]};color:{THEME["title_color"]};"><span style="font-size:2rem;font-weight:600;">{row.temperature_2m_max:.0f}&deg;</span><span style="font-size:1.35rem;color:{THEME["muted_color"]};">{row.temperature_2m_min:.0f}&deg;</span></div>'
-            f'<div><div style="color:{THEME["body_color"]};font-size:1rem;font-weight:500;">{row.weather_summary}</div><div style="color:{THEME["muted_color"]};font-size:0.92rem;margin-top:0.15rem;">Max {row.temperature_2m_max:.0f}&deg; / Min {row.temperature_2m_min:.0f}&deg;</div></div>'
+            f'<div class="daily-row" style="display:grid;grid-template-columns:88px 120px 1fr;align-items:center;gap:0.9rem;padding:1rem 1.35rem;border-top:1px solid {THEME["soft_border"]};">'
+            f'<div class="daily-day"><div style="color:{THEME["title_color"]};font-weight:700;">{row.forecast_date.strftime("%a").upper()}</div><div class="daily-date" style="color:{THEME["muted_color"]};font-size:0.9rem;">{row.forecast_date.strftime("%m/%d")}</div></div>'
+            f'<div class="daily-temp-wrap" style="display:flex;align-items:baseline;gap:0.5rem;font-family:{THEME["heading_font"]};color:{THEME["title_color"]};"><span class="daily-max" style="font-size:2rem;font-weight:600;">{row.temperature_2m_max:.0f}&deg;</span><span class="daily-min" style="font-size:1.35rem;color:{THEME["muted_color"]};">{row.temperature_2m_min:.0f}&deg;</span></div>'
+            f'<div><div class="daily-summary" style="color:{THEME["body_color"]};font-size:1rem;font-weight:500;">{row.weather_summary}</div><div class="daily-minmax" style="color:{THEME["muted_color"]};font-size:0.92rem;margin-top:0.15rem;">Max {row.temperature_2m_max:.0f}&deg; / Min {row.temperature_2m_min:.0f}&deg;</div></div>'
             "</div>"
         )
     st.markdown(
-        f'<div style="background:{THEME["card_bg"]};border:1px solid {THEME["card_border"]};border-radius:22px;box-shadow:{THEME["shadow"]};overflow:hidden;"><div style="padding:1rem 1.35rem 0.9rem 1.35rem;color:{THEME["muted_color"]};font-size:0.92rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Next 3 Days Outlook</div>{"".join(rows)}</div>',
+        f'<div class="daily-card" style="background:{THEME["card_bg"]};border:1px solid {THEME["card_border"]};border-radius:22px;box-shadow:{THEME["shadow"]};overflow:hidden;"><div class="daily-card-header" style="padding:1rem 1.35rem 0.9rem 1.35rem;color:{THEME["muted_color"]};font-size:0.92rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Next 3 Days Outlook</div>{"".join(rows)}</div>',
         unsafe_allow_html=True,
     )
 
@@ -264,10 +392,10 @@ def render_story_card(title, primary, text):
     """Render a compact narrative insight card."""
     st.markdown(
         f"""
-        <div style="background:{THEME['card_bg']};border:1px solid {THEME['card_border']};border-radius:20px;box-shadow:{THEME['shadow']};padding:1.2rem 1.25rem 1.15rem 1.25rem;min-height:158px;">
-            <div style="color:{THEME['muted_color']};font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.8rem;">{title}</div>
-            <div style="color:{THEME['title_color']};font-family:{THEME['heading_font']};font-size:1.55rem;font-weight:600;line-height:1.15;letter-spacing:-0.025em;margin-bottom:0.65rem;">{primary}</div>
-            <div style="color:{THEME['body_color']};font-size:0.9rem;line-height:1.62;">{text}</div>
+        <div class="story-card" style="background:{THEME['card_bg']};border:1px solid {THEME['card_border']};border-radius:20px;box-shadow:{THEME['shadow']};padding:1.2rem 1.25rem 1.15rem 1.25rem;min-height:158px;">
+            <div class="story-eyebrow" style="color:{THEME['muted_color']};font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.8rem;">{title}</div>
+            <div class="story-primary" style="color:{THEME['title_color']};font-family:{THEME['heading_font']};font-size:1.55rem;font-weight:600;line-height:1.15;letter-spacing:-0.025em;margin-bottom:0.65rem;">{primary}</div>
+            <div class="story-copy" style="color:{THEME['body_color']};font-size:0.9rem;line-height:1.62;">{text}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -275,8 +403,15 @@ def render_story_card(title, primary, text):
 
 
 def prepare_chart_labels(chart_df, value_column):
-    """Label every hourly point on the hourly temperature chart."""
-    label_df = chart_df.copy()
+    """Label a subset of chart points so the chart stays readable on mobile."""
+
+    label_df = chart_df.iloc[::2].copy()
+    if not chart_df.empty:
+        edge_rows = chart_df.iloc[[0, -1]].copy()
+        label_df = pd.concat([label_df, edge_rows], ignore_index=True)
+        label_df = label_df.drop_duplicates(
+            subset=["forecast_time_dhaka"], keep="last"
+        ).sort_values("forecast_time_dhaka")
     label_df["value_label"] = label_df[value_column].round(1).astype(str)
     return label_df
 
@@ -335,12 +470,12 @@ def render_temperature_forecast_chart(chart_df):
     figure.update_xaxes(
         range=[x_axis_start, x_axis_end],
         tickformat="%I %p",
-        dtick=3600000,
+        dtick=7200000,
         showgrid=False,
         showline=True,
         linewidth=1,
         linecolor=THEME["soft_border"],
-        tickfont={"size": 12, "color": THEME["muted_color"]},
+        tickfont={"size": 11, "color": THEME["muted_color"]},
         zeroline=False,
     )
     figure.update_yaxes(
@@ -428,6 +563,17 @@ def build_seven_day_summary(historical_df, current_timestamp):
 
 def render_temperature_trend_chart(trend_df):
     """Render a 7-day temperature trend with avg line and min/max band."""
+    label_df = trend_df.copy()
+    if len(label_df) > 3:
+        key_rows = pd.concat(
+            [
+                label_df.iloc[[0, -1]],
+                label_df.loc[[label_df["avg_temp"].idxmax()]],
+            ],
+            ignore_index=True,
+        )
+        label_df = key_rows.drop_duplicates(subset=["day"]).sort_values("day")
+
     figure = go.Figure()
     figure.add_trace(
         go.Scatter(
@@ -455,13 +601,22 @@ def render_temperature_trend_chart(trend_df):
         go.Scatter(
             x=trend_df["day"],
             y=trend_df["avg_temp"],
-            mode="lines+markers+text",
+            mode="lines+markers",
             line={"color": THEME["temp_color"], "width": 3},
             marker={"size": 8, "color": THEME["temp_color"]},
-            text=trend_df["avg_temp"].round(1).astype(str),
-            textposition="top center",
-            textfont={"size": 12, "color": THEME["body_color"]},
             hovertemplate="%{x|%b %d}<br>Avg: %{y:.1f}<extra></extra>",
+            showlegend=False,
+        )
+    )
+    figure.add_trace(
+        go.Scatter(
+            x=label_df["day"],
+            y=label_df["avg_temp"],
+            mode="text",
+            text=label_df["avg_temp"].round(1).astype(str),
+            textposition="top center",
+            textfont={"size": 11, "color": THEME["body_color"]},
+            hoverinfo="skip",
             showlegend=False,
         )
     )
@@ -487,7 +642,7 @@ def render_temperature_trend_chart(trend_df):
         showline=True,
         linewidth=1,
         linecolor=THEME["soft_border"],
-        tickfont={"size": 12, "color": THEME["muted_color"]},
+        tickfont={"size": 11, "color": THEME["muted_color"]},
         zeroline=False,
     )
     figure.update_yaxes(
