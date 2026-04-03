@@ -14,7 +14,7 @@ API_URL = (
     "https://api.open-meteo.com/v1/forecast"
     "?latitude=23.81"
     "&longitude=90.41"
-    "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code"
+    "&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code"
     "&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"
     "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,rain_sum,showers_sum,snowfall_sum"
     "&timezone=Asia%2FDhaka"
@@ -331,6 +331,7 @@ def transform_current_data(data, extracted_at):
                 "latitude": data.get("latitude"),
                 "longitude": data.get("longitude"),
                 "temperature_2m": current.get("temperature_2m"),
+                "apparent_temperature": current.get("apparent_temperature"),
                 "relative_humidity_2m": current.get("relative_humidity_2m"),
                 "wind_speed_10m": current.get("wind_speed_10m"),
                 "wind_direction_10m": current.get("wind_direction_10m"),

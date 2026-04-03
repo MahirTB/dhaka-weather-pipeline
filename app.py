@@ -370,9 +370,9 @@ def render_current_weather_card(current_row):
                     <div class="current-location" style="margin-top:0.3rem;color:{THEME['muted_color']};font-size:0.96rem;">Dhaka, Bangladesh</div>
                 </div>
                 <div>
-                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Humidity</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['relative_humidity_2m']}%</span></div>
+                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Feels Like</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['apparent_temperature']:.1f}°C</span></div>
+                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Humidity</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['relative_humidity_2m']}%</span></div>
                     <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid {THEME['soft_border']};"><span style="color:{THEME['muted_color']};">Wind</span><span style="color:{THEME['title_color']};font-weight:600;">{wind_display}</span></div>
-                    <div class="current-stat-row" style="display:flex;justify-content:space-between;padding:0.75rem 0;"><span style="color:{THEME['muted_color']};">Condition</span><span style="color:{THEME['title_color']};font-weight:600;">{current_row['weather_summary']}</span></div>
                 </div>
             </div>
         </div>
