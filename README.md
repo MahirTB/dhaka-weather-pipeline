@@ -1,3 +1,5 @@
+![Architecture Diagram](architecture.jpg)
+
 ## 🏗️ Architecture
 
 This pipeline follows a modular ETL (Extract, Transform, Load) pattern, orchestrated by Prefect Cloud for high reliability.

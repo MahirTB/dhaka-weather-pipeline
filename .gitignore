@@ -15,6 +15,7 @@ plugins/
 *.json
 *.parquet
 *.csv
+*.jpg
 
 # Python build/cache files
 *.pyc
