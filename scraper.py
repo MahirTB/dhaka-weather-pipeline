@@ -598,8 +598,9 @@ def run_pipeline(raise_on_failure=False):
     # Record the moment we started extracting data.
     extracted_at = datetime.now(dhaka_tz)
     # Define the history window we want to refresh on every run.
-    history_start_date = (extracted_at.date() - timedelta(days=1)).isoformat()
-    history_end_date = extracted_at.date().isoformat()
+    # Use dates that have fully passed (not the current day, as the API doesn't allow that)
+    history_start_date = (extracted_at.date() - timedelta(days=2)).isoformat()
+    history_end_date = (extracted_at.date() - timedelta(days=1)).isoformat()
 
     try:
         # Fetch the raw forecast payload from the API.
